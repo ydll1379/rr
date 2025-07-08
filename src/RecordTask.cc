@@ -22,6 +22,7 @@
 #include "record_signal.h"
 #include "rr/rr.h"
 #include "util.h"
+#include "memory_recording_optimization.h"
 
 using namespace std;
 
@@ -1857,6 +1858,55 @@ void RecordTask::record_remote_even_if_null(remote_ptr<void> addr,
 
   auto buf = read_mem(addr.cast<uint8_t>(), num_bytes);
   trace_writer().write_raw(rec_tid, buf.data(), num_bytes, addr);
+}
+
+// ============================================================================
+// Optimized memory recording methods
+// ============================================================================
+
+void RecordTask::record_remote_optimized(remote_ptr<void> addr, ssize_t num_bytes,
+                                        MemWriteSizeValidation size_validation) {
+  ASSERT(this, num_bytes >= 0);
+
+  if (!addr) {
+    return;
+  }
+
+  // 初始化优化记录器（如果还没有初始化）
+  if (!optimized_recorder) {
+    optimized_recorder = make_unique<OptimizedMemoryRecorder>(this);
+  }
+
+  // 使用优化的内存记录
+  optimized_recorder->record_memory(addr, num_bytes, size_validation);
+}
+
+void RecordTask::record_remote_batch(const vector<pair<remote_ptr<void>, size_t>>& ranges) {
+  if (ranges.empty()) {
+    return;
+  }
+
+  // 初始化优化记录器（如果还没有初始化）
+  if (!optimized_recorder) {
+    optimized_recorder = make_unique<OptimizedMemoryRecorder>(this);
+  }
+
+  // 使用批量记录
+  optimized_recorder->record_memory_batch(ranges);
+}
+
+void RecordTask::flush_memory_recording_buffer() {
+  if (optimized_recorder) {
+    optimized_recorder->flush_all();
+  }
+}
+
+const MemoryRecordingStats& RecordTask::get_memory_recording_stats() const {
+  static MemoryRecordingStats empty_stats;
+  if (optimized_recorder) {
+    return optimized_recorder->get_stats();
+  }
+  return empty_stats;
 }
 
 void RecordTask::pop_event(EventType expected_type) {

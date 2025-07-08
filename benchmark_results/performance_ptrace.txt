@@ -1,0 +1,7 @@
+性能测试结果 (ptrace模式):
+---
+getpid: 1000000 calls in 133.69 ms (7480214.83 calls/sec)
+gettimeofday: 1000000 calls in 173.01 ms (5780079.53 calls/sec)
+write: 100000 calls in 4055.18 ms (24659.84 calls/sec)
+mmap/munmap: 10000 calls in 871.03 ms (11480.70 calls/sec)
+---

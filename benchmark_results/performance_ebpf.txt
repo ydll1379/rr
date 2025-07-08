@@ -1,0 +1,7 @@
+性能测试结果 (ebpf模式):
+---
+getpid: 1000000 calls in 128.81 ms (7763673.77 calls/sec)
+gettimeofday: 1000000 calls in 163.11 ms (6130982.31 calls/sec)
+write: 100000 calls in 3377.28 ms (29609.62 calls/sec)
+mmap/munmap: 10000 calls in 732.97 ms (13643.05 calls/sec)
+---
