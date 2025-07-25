@@ -8,12 +8,6 @@
 #include "Task.h"
 #include "TraceFrame.h"
 
-// Forward declarations
-namespace rr {
-class OptimizedMemoryRecorder;
-struct MemoryRecordingStats;
-}
-
 namespace rr {
 
 struct Sighandlers;
@@ -437,13 +431,6 @@ public:
   // exists
   bool record_remote_by_local_map(remote_ptr<void> addr, size_t num_bytes);
 
-  // Optimized memory recording methods
-  void record_remote_optimized(remote_ptr<void> addr, ssize_t num_bytes,
-                              MemWriteSizeValidation size_validation = MemWriteSizeValidation::EXACT);
-  void record_remote_batch(const std::vector<std::pair<remote_ptr<void>, size_t>>& ranges);
-  void flush_memory_recording_buffer();
-  const MemoryRecordingStats& get_memory_recording_stats() const;
-
   template <typename T>
   void write_and_record(remote_ptr<T> addr, const T& value, bool* ok = nullptr,
                         uint32_t flags = 0) {
@@ -840,9 +827,6 @@ public:
   // Set to prevent the scheduler from scheduling this tid, even
   // if it is otherwise considered runnable. Used for testing.
   bool schedule_frozen;
-  
-  // Optimized memory recording
-  std::unique_ptr<OptimizedMemoryRecorder> optimized_recorder;
 };
 
 } // namespace rr

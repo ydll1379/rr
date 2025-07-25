@@ -644,7 +644,6 @@ set(RR_SOURCES
   src/RecordTask.cc
   src/Registers.cc
   src/remote_code_ptr.cc
-  src/memory_recording_optimization.cc
   src/ReplayCommand.cc
   src/ReplaySession.cc
   src/replay_syscall.cc
